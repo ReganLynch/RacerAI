@@ -1,6 +1,9 @@
-import pygame
 import math
 import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide" #hidding pygame welcome messages
+import pygame
+import numpy as np
+np.warnings.filterwarnings("ignore")  #filter out all numpy warnings
 from tkinter import *
 from functools import partial
 

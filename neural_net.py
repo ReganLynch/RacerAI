@@ -2,7 +2,6 @@
 #this implementation of a neural net has only 1 hidden layer
 
 import tensorflow as tf
-import numpy as np
 from game_settings import *
 import random
 import copy

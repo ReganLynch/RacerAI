@@ -1,5 +1,4 @@
 from os import listdir
-import pygame
 from game_settings import *
 
 #returns a list of files that are courses
