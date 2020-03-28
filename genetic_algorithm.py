@@ -4,6 +4,7 @@ import copy
 
 
 #gets the best car of the generation
+#SHOULDNT JUST GET BEST CAR -> SHOULD BE BASED ON PROBABILITY
 def get_best_car(cars):
     best_car = cars[0]
     for car in cars:

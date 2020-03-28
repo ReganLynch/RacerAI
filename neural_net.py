@@ -10,6 +10,7 @@ import copy
 
 class Neural_Network(object):
 
+    #NEED TO GET RID OF TENSORFLOW WARNING MESSAGES FROM THIS INIT
     def __init__(self, num_input_nodes, num_hidden_nodes, num_output_nodes, model=None):
         self.num_inputs = num_input_nodes
         self.num_hidden = num_hidden_nodes
