@@ -1,10 +1,7 @@
-#!/usr/bin/env python3
-
 from game import game
 from game_settings import *
 from course_creator import course_creator
 from tkinter import *
-
 
 window_width = 350
 window_height = 300
@@ -42,4 +39,5 @@ def show_splash_screen():
     btn2.place(x=window_width/2 - 35, y=window_height - 90)
     window.mainloop()
 
-show_splash_screen()
+if __name__ == '__main__':
+    show_splash_screen()

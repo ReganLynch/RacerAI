@@ -1,14 +1,19 @@
 import math
 import os
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide" #hidding pygame welcome messages
+ #hidding pygame welcome messages
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
+#make sure we find a display to output to
+if os.environ.get('DISPLAY','') == '':
+    os.environ.__setitem__('DISPLAY', ':0')
 import pygame
 import numpy as np
-np.warnings.filterwarnings("ignore")  #filter out all numpy warnings
-from tkinter import *
+#filter out all numpy warnings
+np.warnings.filterwarnings("ignore")
 from functools import partial
+from tkinter import *
 
 #evolution settings
-population_size = 10
+population_size = 20
 mutation_rate = 0.1
 
 #folder settings
