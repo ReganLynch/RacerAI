@@ -1,21 +1,32 @@
 from game_settings import *
 from car import *
 import copy
+import random
 
 
-#gets the best car of the generation
-#SHOULDNT JUST GET BEST CAR -> SHOULD BE BASED ON PROBABILITY
-def get_best_car(cars):
-    best_car = cars[0]
+#gets the car to be used in the next generation
+#using roulette-wheel selction
+def select_car_to_live(cars):
+    sum = 0
+    #get the sum of all scores
     for car in cars:
-        if car.score > best_car.score:
-            best_car = car
-    return best_car
+        sum += car.score
+    #generate a number between 0 and the sum of scores
+    end_point = random.uniform(0, sum)
+    #sort the list of cars based on their score,
+    cars.sort(key=lambda x: x.score, reverse=True)
+    #go through all cars, adding the cars score to the running score.
+    #if the running score is greater than the end point, return the current car
+    running_score = 0
+    for car in cars:
+        running_score += car.score
+        if running_score >= end_point:
+            return car
 
 
 #this returns the next generation
 def get_next_generation(cars):
-    best_car = get_best_car(cars).copy()
+    best_car = select_car_to_live(cars).copy()
 
     del cars
 

@@ -9,7 +9,6 @@ import copy
 
 class Neural_Network(object):
 
-    #NEED TO GET RID OF TENSORFLOW WARNING MESSAGES FROM THIS INIT
     def __init__(self, num_input_nodes, num_hidden_nodes, num_output_nodes, model=None):
         self.num_inputs = num_input_nodes
         self.num_hidden = num_hidden_nodes
@@ -20,16 +19,14 @@ class Neural_Network(object):
             self.model = model
 
     def createModel(self):
-        hidden = tf.keras.layers.Dense(
-            units=self.num_hidden,
-            input_shape=(self.num_inputs, ),
-            activation='sigmoid')
-        output = tf.keras.layers.Dense(
-            units=self.num_outputs,
-            activation='softmax')
-        self.model = tf.keras.Sequential()
-        self.model.add(hidden)
-        self.model.add(output)
+        self.model = tf.keras.Sequential([
+        #input layer
+        tf.keras.layers.Dense(self.num_hidden, activation='relu', input_shape=(self.num_inputs,)),
+        #hidden layer
+        tf.keras.layers.Dense(self.num_outputs, activation='relu', input_shape=(self.num_inputs,)),
+        #output layer
+        tf.keras.layers.Dense(self.num_outputs, activation='softmax', input_shape=(self.num_hidden,))
+        ])
 
     def predict(self, inputs):
         ins = np.array([inputs])
