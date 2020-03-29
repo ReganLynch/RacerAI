@@ -3,7 +3,6 @@ from car import *
 import copy
 import random
 
-
 #gets the car to be used in the next generation
 #using roulette-wheel selction
 def select_car_to_live(cars):
@@ -23,13 +22,9 @@ def select_car_to_live(cars):
         if running_score >= end_point:
             return car
 
-
 #this returns the next generation
 def get_next_generation(cars):
     best_car = select_car_to_live(cars).copy()
-
-    del cars
-
     ret_cars = []
     ret_cars.append(best_car)
     for i in range(1, population_size):

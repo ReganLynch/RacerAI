@@ -30,7 +30,7 @@ class Neural_Network(object):
 
     def predict(self, inputs):
         ins = np.array([inputs])
-        ys = self.model.predict(ins, workers=num_cores, use_multiprocessing=multiprocessing)  #use multi-proccessing if desired
+        ys = self.model.predict(ins)
         return ys[0]
 
     def mutate(self, mutation_rate):
@@ -43,9 +43,9 @@ class Neural_Network(object):
                 if type(weight) is np.ndarray:
                     for x in range(len(weight)):
                         if random.uniform(0, 1) < mutation_rate:
-                            weight[x] = weight[x] + random.gauss(0, 1)
+                            weight[x] = weight[x] + (random.gauss(0, 1) * learning_factor)
                 elif random.uniform(0, 1) < mutation_rate:
-                    weight = weight + random.gauss(0, 1)
+                    weight = weight + (random.gauss(0, 1) * learning_factor)
                 tensor[j] = weight
             mutated_weights.append(tensor)
         self.model.set_weights(mutated_weights)

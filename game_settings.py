@@ -13,8 +13,9 @@ from functools import partial
 from tkinter import *
 
 #evolution settings
-population_size = 20
+population_size = 10
 mutation_rate = 0.1
+learning_factor = 0.5
 
 #folder settings
 courses_folder = "courses/"
@@ -27,7 +28,7 @@ game_window_inset_x = 100
 game_window_inset_y = 100
 
 #game window settings
-FPS = 74
+FPS = 60
 
 #car settings
 car_width = 20
@@ -40,7 +41,3 @@ rotation_factor = 3.5
 #AI settings
 learning_rate = 0.1
 vision_distance = 3000  #how many pixels in any direction the car can see
-
-#hardware information
-num_cores = 4
-multiprocessing = True
