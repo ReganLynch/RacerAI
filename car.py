@@ -56,9 +56,10 @@ class car(object):
         image, self.rect = self.rotate_img(self.image, self.rect, -working_angle)
         self.display.blit(image, self.rect)
         #draw car vision lines
-        for vision_line in self.vision.vision_lines:
-            pygame.draw.line(self.display, (0, 255, 0), vision_line[0], vision_line[1])
-            pygame.draw.circle(self.display, (255, 0, 0), (int(vision_line[1][0]), int(vision_line[1][1])), 5)
+        if draw_vision_lines:
+            for vision_line in self.vision.vision_lines:
+                pygame.draw.line(self.display, (0, 255, 0), vision_line[0], vision_line[1])
+                pygame.draw.circle(self.display, (255, 0, 0), (int(vision_line[1][0]), int(vision_line[1][1])), 5)
 
     def check_crash(self):
         for course_line in self.course_lines:

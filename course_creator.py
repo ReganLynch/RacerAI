@@ -127,29 +127,28 @@ class course_creator(object):
         pygame.quit()
 
     def add_text_elements(self):
-        textSurface = self.title_font.render("Controls", True, self.line_color)
-        rect = textSurface.get_rect()
-        rect.center = (50, 20)
+        textSurface = self.title_font.render("Controls", True, (255, 151, 5))
+        rect = textSurface.get_rect(left=(game_window_width * 0.005), top=(game_window_height * 0.01))
         self.gameDisplay.blit(textSurface, rect)
-        textSurface = self.sub_font.render("click and hold: creates a line", True, self.line_color)
-        rect = textSurface.get_rect()
-        rect.center = (140, 50)
+
+        textSurface = self.sub_font.render("click and hold: creates a line", True, (255, 151, 5))
+        rect = textSurface.get_rect(left=(game_window_width * 0.02), top=(game_window_height * 0.03))
         self.gameDisplay.blit(textSurface, rect)
-        textSurface = self.sub_font.render("d or del: deletes a line", True, self.line_color)
-        rect = textSurface.get_rect()
-        rect.center = (120, 70)
+
+        textSurface = self.sub_font.render("d or del: deletes a line", True, (255, 151, 5))
+        rect = textSurface.get_rect(left=(game_window_width * 0.02), top=(game_window_height * 0.045))
         self.gameDisplay.blit(textSurface, rect)
-        textSurface = self.sub_font.render("z: remove last line added", True, self.line_color)
-        rect = textSurface.get_rect()
-        rect.center = (130, 90)
+
+        textSurface = self.sub_font.render("z: remove last line added", True, (255, 151, 5))
+        rect = textSurface.get_rect(left=(game_window_width * 0.02), top=(game_window_height * 0.06))
         self.gameDisplay.blit(textSurface, rect)
-        textSurface = self.sub_font.render("s: save the course", True, self.line_color)
-        rect = textSurface.get_rect()
-        rect.center = (105, 110)
+
+        textSurface = self.sub_font.render("s: save the course", True, (255, 151, 5))
+        rect = textSurface.get_rect(left=(game_window_width * 0.02), top=(game_window_height * 0.075))
         self.gameDisplay.blit(textSurface, rect)
-        textSurface = self.sub_font.render("t: add start position", True, self.line_color)
-        rect = textSurface.get_rect()
-        rect.center = (115, 130)
+
+        textSurface = self.sub_font.render("t: add start position", True, (255, 151, 5))
+        rect = textSurface.get_rect(left=(game_window_width * 0.02), top=(game_window_height * 0.09))
         self.gameDisplay.blit(textSurface, rect)
 
     #line creation

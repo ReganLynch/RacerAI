@@ -32,6 +32,7 @@ game_window_inset_y = 100
 FPS = 60
 
 #car settings
+draw_vision_lines = False
 car_width = 20
 car_height = 40
 friction = 0.1
