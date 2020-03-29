@@ -29,6 +29,6 @@ def get_next_generation(cars):
     ret_cars.append(best_car)
     for i in range(1, population_size):
         new_car = best_car.copy()
-        new_car.mutate(learning_rate)
+        new_car.mutate(mutation_rate)
         ret_cars.append(new_car)
     return ret_cars

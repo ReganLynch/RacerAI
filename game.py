@@ -19,16 +19,16 @@ def get_course():
     file_name = { 'name' : ""}
     root = Tk()
     courses = get_all_saved_courses()
-    w = 300
-    h = 50
+    w = 250
+    h = 80
     root.title("Course Selection")
     root.geometry('%dx%d+%d+%d' % (w, h, game_window_width/2 - w/2, game_window_height/2 - h/2))
     tkvar = StringVar(root)
     tkvar.set("-- select one --") # set the default option
     popupMenu = OptionMenu(root, tkvar, *courses)
-    popupMenu.place(x = w/2 ,y=7)
+    popupMenu.place(relx=.5, rely=.7, anchor="c")
     lbl = Label(root, text="Choose a Course: ")
-    lbl.place(x = w/2 - 100, y = 10)
+    lbl.place(relx=.5, rely=.3, anchor="c")
     #nested function
     def get_value(*args):
         val =  tkvar.get()
@@ -50,6 +50,9 @@ class game(object):
     def __init__(self):
         pygame.init()
         f_name = get_course()
+        if f_name == '':
+            print("no course selected, exiting")
+            quit()
         self.cars = []
         self.game_display = pygame.display.set_mode((game_window_width-200,game_window_height-200))
         pygame.display.set_caption("Tensorflow AI Racing Game")

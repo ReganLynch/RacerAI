@@ -12,7 +12,11 @@ class course(object):
         self.lines = []
         self.start_box = pygame.Rect(0,0,0,0)
         self.line_color = (0,0,0)
-        self.path = courses_folder + file_name
+        if not file_name == '':
+            self.path = courses_folder + file_name
+        else:
+            print("no course selected, exiting")
+            quit()
         self.display = display
         self.parse_lines_from_file()
 

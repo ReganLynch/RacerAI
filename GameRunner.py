@@ -22,21 +22,21 @@ def go_to_course_creator():
     create_course = course_creator()
     create_course.run()
 
+#displaying the splash screen
 def show_splash_screen():
-    #create splash screen
     window.geometry('%dx%d+%d+%d' % (window_width, window_height, x, y))
     window.title("Racer")
 
     lbl = Label(window, text="Racer", font=("", 50))
-    lbl.place(x=window_width/2 - 85, y=70)
+    lbl.place(relx=.5, rely=.3, anchor="c")
 
     btn = Button(window, text="Go to Course Creator", bg="gray", fg="white", command=go_to_course_creator)
     btn.config(height = 1, width = 20)
-    btn.place(x=window_width/2 - 70, y=window_height- 50)
+    btn.place(relx=.5, rely=.7, anchor="c")
 
     btn2 = Button(window, text="Play Game!", bg="green", fg="white", command=go_to_game)
     btn2.config(height = 1, width = 10)
-    btn2.place(x=window_width/2 - 35, y=window_height - 90)
+    btn2.place(relx=.5, rely=.6, anchor="c")
     window.mainloop()
 
 if __name__ == '__main__':

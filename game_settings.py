@@ -12,10 +12,11 @@ np.warnings.filterwarnings("ignore")
 from functools import partial
 from tkinter import *
 
-#evolution settings
+#evolution settings / AI settings
 population_size = 10
-mutation_rate = 0.1
-learning_factor = 0.5
+mutation_rate = 0.1  #how often they learn
+learning_factor = 0.8 #how much they deviate when they do learn
+vision_distance = 3000  #how many pixels in any direction the car can see
 
 #folder settings
 courses_folder = "courses/"
@@ -37,7 +38,3 @@ friction = 0.1
 acceleration_factor = 1.0
 max_speed = 5
 rotation_factor = 3.5
-
-#AI settings
-learning_rate = 0.1
-vision_distance = 3000  #how many pixels in any direction the car can see
