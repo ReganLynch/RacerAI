@@ -22,40 +22,53 @@ class course(object):
         self.get_connected_lines()
 
     def draw(self):
-        for line in self.lines:
-            pygame.draw.line(self.display, self.line_color, line[0], line[1])
+        #for line in self.lines:
+            #pygame.draw.line(self.display, self.line_color, line[0], line[1])
+        r = 0
+        for shape in self.all_shapes:
+            for line in shape:
+                pygame.draw.line(self.display, (0, r, 0), line[0], line[1])
+            r += 50
 
     def get_connected_lines(self):
         lines_copy = self.lines.copy()
+        self.all_shapes = []
         while len(lines_copy) > 0:
-            current_line = lines_copy.pop(0)
             curr_shape = []
-            curr_shape.append(current_line)
-            for test_line in lines_copy:
-                if test_line[0] == current_line[0]:
-                    current_line = test_line
-                    lines_copy.remove(test_line)
-                    curr_shape.append(current_line)
-                    break
-                if test_line[1] == current_line[0]:
-                    current_line = test_line
-                    lines_copy.remove(test_line)
-                    curr_shape.append(current_line)
-                    break
-                if test_line[0] == current_line[1]:
-                    current_line = test_line
-                    lines_copy.remove(test_line)
-                    curr_shape.append(current_line)
-                    break
-                if test_line[1] == current_line[1]:
-                    current_line = test_line
-                    lines_copy.remove(test_line)
-                    curr_shape.append(current_line)
-                    break
-            break
-        for line in curr_shape:
-            print("LINE ->", line[0], line[1])
-
+            curr_shape.append(lines_copy.pop(0))
+            i = 0
+            #go through all lines that havent been processed yet
+            while i < len(lines_copy):
+                curr_line = lines_copy[i]
+                found_line = False
+                #check if the current line connects to any of the lines in the current SHAPE
+                for shape_line in curr_shape:
+                    if shape_line[0] == curr_line[1]:
+                        curr_shape.append(curr_line)
+                        lines_copy.remove(curr_line)
+                        found_line = True
+                        break
+                    if shape_line[0] == curr_line[0]:
+                        curr_shape.append(curr_line)
+                        lines_copy.remove(curr_line)
+                        found_line = True
+                        break
+                    if shape_line[1] == curr_line[0]:
+                        curr_shape.append(curr_line)
+                        lines_copy.remove(curr_line)
+                        found_line = True
+                        break
+                    if shape_line[1] == curr_line[1]:
+                        curr_shape.append(curr_line)
+                        lines_copy.remove(curr_line)
+                        found_line = True
+                        break
+                if found_line:
+                    i = 0
+                else:
+                    i += 1
+            #append the current shape to all shapes
+            self.all_shapes.append(curr_shape)
 
     def parse_lines_from_file(self):
         first = True
