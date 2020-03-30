@@ -19,10 +19,43 @@ class course(object):
             quit()
         self.display = display
         self.parse_lines_from_file()
+        self.get_connected_lines()
 
     def draw(self):
         for line in self.lines:
             pygame.draw.line(self.display, self.line_color, line[0], line[1])
+
+    def get_connected_lines(self):
+        lines_copy = self.lines.copy()
+        while len(lines_copy) > 0:
+            current_line = lines_copy.pop(0)
+            curr_shape = []
+            curr_shape.append(current_line)
+            for test_line in lines_copy:
+                if test_line[0] == current_line[0]:
+                    current_line = test_line
+                    lines_copy.remove(test_line)
+                    curr_shape.append(current_line)
+                    break
+                if test_line[1] == current_line[0]:
+                    current_line = test_line
+                    lines_copy.remove(test_line)
+                    curr_shape.append(current_line)
+                    break
+                if test_line[0] == current_line[1]:
+                    current_line = test_line
+                    lines_copy.remove(test_line)
+                    curr_shape.append(current_line)
+                    break
+                if test_line[1] == current_line[1]:
+                    current_line = test_line
+                    lines_copy.remove(test_line)
+                    curr_shape.append(current_line)
+                    break
+            break
+        for line in curr_shape:
+            print("LINE ->", line[0], line[1])
+
 
     def parse_lines_from_file(self):
         first = True
