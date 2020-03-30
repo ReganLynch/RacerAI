@@ -28,7 +28,7 @@ class course(object):
         for shape in self.all_shapes:
             for line in shape:
                 pygame.draw.line(self.display, (0, r, 0), line[0], line[1])
-            r += 50
+            r += 200
 
     def get_connected_lines(self):
         lines_copy = self.lines.copy()

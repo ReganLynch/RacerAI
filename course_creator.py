@@ -2,6 +2,7 @@
 import math
 import sys
 from tkinter import *
+from game import intersects
 from functools import partial
 from game_settings import *
 
@@ -58,6 +59,7 @@ class course_creator(object):
         self.start_box = pygame.Rect(self.gameDisplay.get_width()/2 - car_width/2, self.gameDisplay.get_height()/2 - car_height/2, car_width, car_height)
         self.drawn_start_box  = False
         self.hovering_on_start = False
+        self.points = {} #keep track of all pints (can have at most 2 lines ending at the same point)
 
 
     def run(self):
@@ -79,6 +81,8 @@ class course_creator(object):
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_z:            #if user hits z -> remove last line
                         if len(self.lines) > 0:
+                            self.points[''.join(map(str, self.lines[-1][0]))] -= 1
+                            self.points[''.join(map(str, self.lines[-1][1]))] -= 1
                             del self.lines[-1]
                     if event.key == pygame.K_s:            #if user hits s -> save the lines into a file
                         self.save_window()
@@ -110,6 +114,8 @@ class course_creator(object):
                 if is_between(line[0], line[1], pygame.mouse.get_pos()):                      #highliting line if hovered over
                     pygame.draw.aaline(self.gameDisplay, self.hover_color, line[0], line[1])
                     if keys[pygame.K_d] or keys[pygame.K_DELETE]:
+                        self.points[''.join(map(str, line[0]))] -= 1
+                        self.points[''.join(map(str, line[1]))] -= 1
                         self.lines.remove(line)
                 if get_dist(pygame.mouse.get_pos(), line[0]) < 20:                      #drawine circle at end of lines
                     pygame.draw.circle(self.gameDisplay, self.circle_col, line[0], 5)
@@ -130,23 +136,18 @@ class course_creator(object):
         textSurface = self.title_font.render("Controls", True, (255, 151, 5))
         rect = textSurface.get_rect(left=(game_window_width * 0.005), top=(game_window_height * 0.01))
         self.gameDisplay.blit(textSurface, rect)
-
         textSurface = self.sub_font.render("click and hold: creates a line", True, (255, 151, 5))
         rect = textSurface.get_rect(left=(game_window_width * 0.02), top=(game_window_height * 0.03))
         self.gameDisplay.blit(textSurface, rect)
-
         textSurface = self.sub_font.render("d or del: deletes a line", True, (255, 151, 5))
         rect = textSurface.get_rect(left=(game_window_width * 0.02), top=(game_window_height * 0.045))
         self.gameDisplay.blit(textSurface, rect)
-
         textSurface = self.sub_font.render("z: remove last line added", True, (255, 151, 5))
         rect = textSurface.get_rect(left=(game_window_width * 0.02), top=(game_window_height * 0.06))
         self.gameDisplay.blit(textSurface, rect)
-
         textSurface = self.sub_font.render("s: save the course", True, (255, 151, 5))
         rect = textSurface.get_rect(left=(game_window_width * 0.02), top=(game_window_height * 0.075))
         self.gameDisplay.blit(textSurface, rect)
-
         textSurface = self.sub_font.render("t: add start position", True, (255, 151, 5))
         rect = textSurface.get_rect(left=(game_window_width * 0.02), top=(game_window_height * 0.09))
         self.gameDisplay.blit(textSurface, rect)
@@ -156,8 +157,39 @@ class course_creator(object):
         if self.hovering_on_start:
             return
         if event.type == pygame.MOUSEBUTTONUP:
-            if get_dist(self.start_pos, self.end_pos) > 40:             #lines are only added if they are longer than 40
-                self.lines.append((self.start_pos, self.end_pos))
+            #make sure that this line does not cross paths (intersect) with any other lines of the course
+            line_intersects = False
+            for course_line in self.lines:
+                if self.start_pos != course_line[0] and self.start_pos != course_line[1] and self.end_pos != course_line[0] and self.end_pos != course_line[1]:
+                    if intersects(course_line[0], course_line[1], self.start_pos, self.end_pos):
+                        line_intersects = True
+                        break
+            #lines are only added if they are longer than 40, and does not intersect any other line of the course
+            if get_dist(self.start_pos, self.end_pos) > 40 and not line_intersects:
+                #check if points of the line are valid
+                #when both endpoints are already in course
+                if ''.join(map(str,self.start_pos)) in self.points and ''.join(map(str,self.end_pos)) in self.points:
+                    if self.points[''.join(map(str,self.start_pos))] < 2 and self.points[''.join(map(str,self.end_pos))] < 2:
+                        self.lines.append((self.start_pos, self.end_pos))
+                        self.points[''.join(map(str,self.start_pos))] += 1
+                        self.points[''.join(map(str,self.end_pos))] += 1
+                #when only the start pos is in the course already
+                elif ''.join(map(str,self.start_pos)) in self.points:
+                    if self.points[''.join(map(str,self.start_pos))] < 2:
+                        self.lines.append((self.start_pos, self.end_pos))
+                        self.points[''.join(map(str,self.start_pos))] += 1
+                        self.points[''.join(map(str,self.end_pos))] = 1
+                #then only the end pos is already in the course
+                elif ''.join(map(str,self.end_pos)) in self.points:
+                    if self.points[''.join(map(str,self.end_pos))] < 2:
+                        self.lines.append((self.start_pos, self.end_pos))
+                        self.points[''.join(map(str,self.start_pos))] = 1
+                        self.points[''.join(map(str,self.end_pos))] += 1
+                #when neither the start point or the end point are part of the course already
+                else:
+                    self.lines.append((self.start_pos, self.end_pos))
+                    self.points[''.join(map(str,self.start_pos))] = 1
+                    self.points[''.join(map(str,self.end_pos))] = 1
             self.creating_line = False
         elif pygame.mouse.get_pressed()[0]:
             try:
