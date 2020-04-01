@@ -28,6 +28,10 @@ game_window_height = 1080
 game_window_inset_x = 100
 game_window_inset_y = 100
 
+#Colour settings
+game_background_colour = (86, 181, 31)
+game_road_colour = (150, 150, 150)
+
 #game window settings
 FPS = 60
 

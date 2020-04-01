@@ -226,6 +226,9 @@ class course_creator(object):
 
     #logic for saving the couse to local machine
     def save_course(self, entry):
+        if not validate_course:
+            print()
+            #TODO: raise error message saying the the course is invalid
         course_name = entry.get()
         self.window.destroy()
         file_name = courses_folder + course_name + ".txt"
@@ -243,6 +246,11 @@ class course_creator(object):
                 for line in self.lines:
                     line_str = str(line) + "\n"
                     file.write(line_str)
+
+    #TODO: validate the course before saving
+    #make sure that there is a most one continuous shape within another (this is to make the painting algorithm work)
+    def validate_course(self):
+        return True
 
     def draw_start_box(self):
         if self.hovering_on_start:

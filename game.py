@@ -61,7 +61,7 @@ class game(object):
         self.thread.start()
         os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (game_window_inset_x, game_window_inset_y)
         self.clock = pygame.time.Clock()
-        self.backround = (150,150,150)
+        self.backround = game_background_colour
         self.num_generations = 0
 
 
