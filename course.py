@@ -21,19 +21,14 @@ class course(object):
         self.display = display
         self.parse_lines_from_file()
         self.all_shapes = create_shapes_from_lines(self.lines)
-        areas = sort_shapes_by_area(self.all_shapes)
+        areas = get_areas_of_shapes(self.all_shapes)
         self.max_shape_index = areas.index(max(areas))
-
-        for area in areas:
-            print(area)
-        print(self.max_shape_index)
 
     def draw(self):
         pygame.draw.polygon(self.display, game_road_colour, self.all_shapes[self.max_shape_index])
         for i in range(0, len(self.all_shapes)):
             if i != self.max_shape_index:
                 pygame.draw.polygon(self.display, game_background_colour, self.all_shapes[i])
-
 
     def parse_lines_from_file(self):
         first = True

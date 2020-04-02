@@ -32,11 +32,11 @@ def show_splash_screen():
 
     btn = Button(window, text="Go to Course Creator", bg="gray", fg="white", command=go_to_course_creator)
     btn.config(height = 1, width = 20)
-    btn.place(relx=.5, rely=.7, anchor="c")
+    btn.place(relx=.5, rely=.85, anchor="c")
 
     btn2 = Button(window, text="Play Game!", bg="green", fg="white", command=go_to_game)
     btn2.config(height = 1, width = 10)
-    btn2.place(relx=.5, rely=.6, anchor="c")
+    btn2.place(relx=.5, rely=.7, anchor="c")
     window.mainloop()
 
 if __name__ == '__main__':

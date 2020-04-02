@@ -51,7 +51,7 @@ def create_shapes_from_lines(lines):
 
 #sortes the shapes based on their areas
 #0th index will have the largest area
-def sort_shapes_by_area(shapes):
+def get_areas_of_shapes(shapes):
     areas = []
     for shape in shapes:
         numerator = 0
@@ -64,3 +64,14 @@ def sort_shapes_by_area(shapes):
         area = numerator / 2
         areas.append(abs(area))
     return areas
+
+#returns a tuple of the leftmost and rightmost points of a shape
+def get_leftmost_rightmost_points(shape):
+    lm = (99999, 0)
+    rm = (0, 0)
+    for point in shape:
+        if point[0] < lm[0]:
+            lm = point
+        elif point[0] > rm[0]:
+            rm = point
+    return lm, rm

@@ -5,6 +5,7 @@ from tkinter import *
 from game import intersects
 from functools import partial
 from game_settings import *
+from course_shape_creator import *
 
 
 #determines distance between two points
@@ -44,7 +45,7 @@ class course_creator(object):
         os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (game_window_inset_x,game_window_inset_x)
         self.gameDisplay = pygame.display.set_mode((game_window_width-200,game_window_height-200))
         self.clock = pygame.time.Clock()
-        self.backround = (150,150,150)
+        self.backround = game_road_colour
         self.creating_line = False
         self.hovered_on_end = False
         self.hover_pos = (0,0)
@@ -83,7 +84,7 @@ class course_creator(object):
                         if len(self.lines) > 0:
                             self.points[''.join(map(str, self.lines[-1][0]))] -= 1
                             self.points[''.join(map(str, self.lines[-1][1]))] -= 1
-                            del self.lines[-1]
+                            self.lines.pop(len(self.lines) - 1)
                     if event.key == pygame.K_s:            #if user hits s -> save the lines into a file
                         self.save_window()
                     if event.key == pygame.K_t:            #if user hits t -> create a start position for the car
@@ -210,25 +211,24 @@ class course_creator(object):
 
     #save course window
     def save_window(self):
-        w = 250
+        if not self.validate_course():
+            return
+        w = 350
         h = 80
         self.window = Tk()
         self.window.geometry('%dx%d+%d+%d' % (w, h, game_window_width/2 - w/2, game_window_height/2 - h/2))
         self.window.title("Save Course")
         lbl = Label(self.window, text="course name")
-        lbl.place(x=20, y=10)
+        lbl.place(relx=0.1, rely=0.2)
         e1 = Entry(self.window)
-        e1.place(x=100, y=10)
+        e1.place(relx=0.4, rely=0.2)
         btn = Button(self.window, text='save', command=partial(self.save_course, e1))
         btn.config(height = 1, width = 10)
-        btn.place(x=w/3, y=40)
+        btn.place(relx=0.35, rely=0.65)
         self.window.mainloop()
 
     #logic for saving the couse to local machine
     def save_course(self, entry):
-        if not validate_course:
-            print()
-            #TODO: raise error message saying the the course is invalid
         course_name = entry.get()
         self.window.destroy()
         file_name = courses_folder + course_name + ".txt"
@@ -246,11 +246,20 @@ class course_creator(object):
                 for line in self.lines:
                     line_str = str(line) + "\n"
                     file.write(line_str)
-
-    #TODO: validate the course before saving
-    #make sure that there is a most one continuous shape within another (this is to make the painting algorithm work)
-    def validate_course(self):
-        return True
+        #display to the user that the course was saved correctly
+        self.window = Tk()
+        w = 200
+        h = 50
+        self.window.geometry('%dx%d+%d+%d' % (w, h, game_window_width/2 - w/2, game_window_height/2 - h/2))
+        self.window.title("Course Saved")
+        lbl = Label(self.window, text='Course saved successfully.')
+        lbl.place(relx=0.5, rely=0.3, anchor=CENTER)
+        def close_window():
+            self.window.destroy()
+        btn = Button(self.window, text="Ok", bg="gray", fg="white", command=close_window)
+        btn.place(relx=0.5, rely=0.7, anchor=CENTER)
+        self.window.lift()
+        self.window.mainloop()
 
     def draw_start_box(self):
         if self.hovering_on_start:
@@ -273,3 +282,49 @@ class course_creator(object):
             rect = textSurface.get_rect()
             rect.center = (self.start_box.left + car_width/2, self.start_box.top + car_height/2)
             self.gameDisplay.blit(textSurface, rect)
+
+    #validate the course
+    def validate_course(self):
+        valid_course = True
+        err_msg = ''
+        shapes = create_shapes_from_lines(self.lines)
+        #check if there are enough shapes
+        if len(shapes) < 2:
+            valid_course = False
+            err_msg = 'there are not enough line segements to \ncreate a course. Invalid Course.'
+        #check if there are enough lines
+        if len(self.lines) < 6:
+            valid_course = False
+            err_msg = 'not enough points to make a course, invalid course'
+        #make sure all lines connect to another line
+        #for this, for every point, there is another on the same spot
+        pts = []
+        for line in self.lines:
+            pts.append(line[0])
+            pts.append(line[1])
+        pts.sort()
+        for i in range(0, len(pts), 2):
+            if pts[i] != pts[i+1]:
+                #TODO Raise error
+                err_msg = 'invalid course, there is a line segment that isnt closed'
+                valid_course = False
+        #check that the start position has been defined
+        if not self.drawn_start_box:
+            err_msg = 'no car start position defined, invalid course'
+            valid_course = False
+        #display error if the course was found to be invalid
+        if not valid_course:
+            self.window = Tk()
+            w = 400
+            h = 90
+            self.window.geometry('%dx%d+%d+%d' % (w, h, game_window_width/2 - w/2, game_window_height/2 - h/2))
+            self.window.title("Invalid Course")
+            lbl = Label(self.window, text=err_msg)
+            lbl.place(relx=0.5, rely=0.3, anchor=CENTER)
+            def close_window():
+                self.window.destroy()
+            btn = Button(self.window, text="Ok", bg="gray", fg="white", command=close_window)
+            btn.place(relx=0.5, rely=0.7, anchor=CENTER)
+            self.window.lift()
+            self.window.mainloop()
+        return valid_course
