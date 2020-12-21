@@ -6,6 +6,7 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 if os.environ.get('DISPLAY','') == '':
     os.environ.__setitem__('DISPLAY', ':0.0')
 import pygame
+from pygame_widgets import *
 import numpy as np
 #filter out all numpy warnings
 np.warnings.filterwarnings("ignore")
@@ -14,9 +15,9 @@ from tkinter import *
 
 #evolution settings / AI settings
 population_size = 10
-mutation_rate = 0.1  #how often they learn
+mutation_rate = 0.1  #how often they learn mutate
 learning_factor = 0.8 #how much they deviate when they do learn
-vision_distance = 3000  #how many pixels in any direction the car can see
+vision_distance = 3000  #how many pixels ahead the cars sensors can see
 
 #folder settings
 courses_folder = "courses/"
@@ -34,6 +35,9 @@ game_road_colour = (127, 133, 127)
 
 #game window settings
 FPS = 60
+
+#the font used on th game page
+display_font = 'Times New Roman'
 
 #car settings
 draw_vision_lines = False

@@ -25,9 +25,9 @@ def go_to_course_creator():
 #displaying the splash screen
 def show_splash_screen():
     window.geometry('%dx%d+%d+%d' % (window_width, window_height, x, y))
-    window.title("Racer")
+    window.title("RacerAI")
 
-    lbl = Label(window, text="Racer", font=("", 50))
+    lbl = Label(window, text="RacerAI", font=("", 50))
     lbl.place(relx=.5, rely=.3, anchor="c")
 
     btn = Button(window, text="Go to Course Creator", bg="gray", fg="white", command=go_to_course_creator)
