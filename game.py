@@ -38,8 +38,16 @@ def get_course():
     root.mainloop()
     return file_name['name']
 
+def return_to_splash_screen():
+    from GameRunner import show_splash_screen
+    pygame.quit()
+    show_splash_screen()
+
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
+
+# TODO: add button to save the car
+
 class game(object):
 
     def initialize_cars(self):
@@ -61,11 +69,12 @@ class game(object):
         os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (game_window_inset_x, game_window_inset_y)
         self.clock = pygame.time.Clock()
         self.backround = game_background_colour
+        self.font = pygame.font.SysFont(display_font,14)
         self.num_generations = 1
         self.curr_max_score = 0
         self.max_score_all_generations = 0
+        self.splash_screen_btn = Button(self.game_display, int(game_window_width * 0.8), int(game_window_height * 0.75), int(game_window_width * 0.06), int(game_window_height * 0.03), text='Return Home', onClick=return_to_splash_screen, font=self.font, inactiveColour=(220,0,0), hoverColour=(255,255,255),pressedColor=(0,255,0))
         self.speed_slider = Slider(self.game_display, int(game_window_width * 0.065), int(game_window_height * 0.043), int(game_window_width * 0.07), int(game_window_height * 0.01), initial=1, min=1, max=100, step=1, color=(255,255,255), handleColor=(0,0,0),curved=True)
-        self.font = pygame.font.SysFont(display_font,14)
 
     def display_evolution_info(self):
         #display generation information
@@ -108,6 +117,9 @@ class game(object):
             #do evolution slider events
             self.speed_slider.listen(game_events)
             self.speed_slider.draw()
+            #do return to home button events
+            self.splash_screen_btn.listen(game_events)
+            self.splash_screen_btn.draw()
             #for the given speed
             for i in range(self.speed_slider.getValue()):
                 #car thinking and drawing
@@ -130,7 +142,6 @@ class game(object):
                         #perfom car actions
                         car.accelerate()
                         car.check_crash()
-                        car.draw()
                 #update the max score across all generations
                 if self.curr_max_score > self.max_score_all_generations:
                     self.max_score_all_generations = self.curr_max_score
@@ -142,6 +153,9 @@ class game(object):
                 #re-draw the slider
                 self.speed_slider.listen(game_events)
                 self.speed_slider.draw()
+            #only after the speed loop do we draw each car
+            for car in self.cars:
+                car.draw()
             #redraw window
             pygame.display.update()
             self.clock.tick(FPS)

@@ -5,13 +5,13 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 #make sure we find a display to output to
 if os.environ.get('DISPLAY','') == '':
     os.environ.__setitem__('DISPLAY', ':0.0')
-import pygame
-from pygame_widgets import *
 import numpy as np
 #filter out all numpy warnings
 np.warnings.filterwarnings("ignore")
 from functools import partial
 from tkinter import *
+import pygame
+from pygame_widgets import *
 
 #evolution settings / AI settings
 population_size = 10

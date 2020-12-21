@@ -33,6 +33,12 @@ def is_between(a, b, c):
         return False
     return True
 
+def return_to_splash_screen():
+    from GameRunner import show_splash_screen
+    pygame.quit()
+    show_splash_screen()
+
+
 #----------------------------------------------------
 #click and hold to add line
 #hover over and hit d or del to remove a line
@@ -61,6 +67,8 @@ class course_creator(object):
         self.drawn_start_box  = False
         self.hovering_on_start = False
         self.points = {} #keep track of all pints (can have at most 2 lines ending at the same point)
+        self.font = pygame.font.SysFont(display_font,14)
+        self.splash_screen_btn = Button(self.gameDisplay, int(game_window_width * 0.8), int(game_window_height * 0.75), int(game_window_width * 0.06), int(game_window_height * 0.03), text='Return Home', onClick=return_to_splash_screen, font=self.font, inactiveColour=(220,0,0), hoverColour=(255,255,255),pressedColor=(0,255,0))
 
 
     def run(self):
@@ -71,6 +79,10 @@ class course_creator(object):
             self.gameDisplay.fill(self.backround)
             #put information in top left
             self.add_text_elements()
+            #do button game events`
+            #do return to home button events
+            self.splash_screen_btn.listen(pygame.event.get())
+            self.splash_screen_btn.draw()
             #draw each of the lines
             for line in self.lines:
                 pygame.draw.line(self.gameDisplay, self.line_color, line[0], line[1])
