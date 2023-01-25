@@ -15,6 +15,7 @@ from threading import Thread
 from genetic_algorithm import *
 
 #prompts the user for what course they want to run
+# TODO: FIX CONSOLE ERRORS -> caused by tkinter
 def get_course():
     file_name = { 'name' : ""}
     root = Tk()
@@ -50,10 +51,55 @@ def return_to_splash_screen():
 
 class game(object):
 
+    SPLASH_SCREEN_BUTTON_STYLE = {
+        "hover_color": (0,255,0),
+        "clicked_color": (0,255,0),
+        "clicked_font_color": (0,0,0),
+        "hover_font_color": (0,0,0),
+        "text": "Return Home"
+    }
+
+    DRAW_VISION_BUTTON_STLE = {
+        "hover_color": (255,255,255),
+        "clicked_color": (0,255,0),
+        "clicked_font_color": (0,0,0),
+        "hover_font_color": (0,0,0),
+        "text": "Display Car Vision"
+    }
+
+    HIDE_VISION_BUTTON_STLE = {
+        "hover_color": (255,255,255),
+        "clicked_color": (0,255,0),
+        "clicked_font_color": (0,0,0),
+        "hover_font_color": (0,0,0),
+        "text": "Hide Car Vision"
+    }
+
+    #hide
+    #inactiveColour=(220,0,0), hoverColour=(255,255,255),pressedColor=(0,255,0)
+    #show
+    #inactiveColour=(207, 188, 19), hoverColour=(255,255,255),pressedColor=(0,255,0)
+
     def initialize_cars(self):
         for i in range(population_size):
             new_car = car(self.game_display, self.course.start_box.left, self.course.start_box.top, self.course.lines)
             self.cars.append(new_car)
+
+    def draw_vision_lines(self):
+        self.draw_car_vision = not self.draw_car_vision
+        #TODO FIX
+        if self.draw_car_vision:
+            self.draw_vision_button = Button(
+                                    (int(game_window_width * 0.02), int(game_window_height * 0.11), int(game_window_width * 0.07), int(game_window_height * 0.03)),
+                                    (220,0,0),
+                                    self.draw_vision_lines, 
+                                    **self.HIDE_VISION_BUTTON_STLE)
+        else:
+            self.draw_vision_button = Button(
+                                    (int(game_window_width * 0.02), int(game_window_height * 0.11), int(game_window_width * 0.07), int(game_window_height * 0.03)),
+                                    (207, 188, 19),
+                                    self.draw_vision_lines, 
+                                    **self.DRAW_VISION_BUTTON_STLE)
 
     def __init__(self):
         pygame.init()
@@ -65,7 +111,7 @@ class game(object):
         self.game_display = pygame.display.set_mode((game_window_width-200,game_window_height-200))
         pygame.display.set_caption("Tensorflow AI Racing Game")
         self.course = course(f_name, self.game_display)
-        self.thread = Thread(target=self.initialize_cars(), args=())
+        self.initialize_cars()
         os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (game_window_inset_x, game_window_inset_y)
         self.clock = pygame.time.Clock()
         self.backround = game_background_colour
@@ -73,18 +119,26 @@ class game(object):
         self.num_generations = 1
         self.curr_max_score = 0
         self.max_score_all_generations = 0
-        self.splash_screen_btn = Button(self.game_display, int(game_window_width * 0.8), int(game_window_height * 0.75), int(game_window_width * 0.06), int(game_window_height * 0.03), text='Return Home', onClick=return_to_splash_screen, font=self.font, inactiveColour=(220,0,0), hoverColour=(255,255,255),pressedColor=(0,255,0))
-        self.speed_slider = Slider(self.game_display, int(game_window_width * 0.065), int(game_window_height * 0.043), int(game_window_width * 0.07), int(game_window_height * 0.01), initial=1, min=1, max=100, step=1, color=(255,255,255), handleColor=(0,0,0),curved=True)
+        self.draw_car_vision = False
+
+        #TODO fix
+        self.splash_screen_btn = Button(
+                                (int(game_window_width * 0.8), int(game_window_height * 0.75), int(game_window_width * 0.06), int(game_window_height * 0.03)),
+                                (0,200,50),
+                                return_to_splash_screen, 
+                                **self.SPLASH_SCREEN_BUTTON_STYLE)
+        
+        self.draw_vision_button = Button(
+                                (int(game_window_width * 0.02), int(game_window_height * 0.11), int(game_window_width * 0.07), int(game_window_height * 0.03)),
+                                (207, 188, 19),
+                                self.draw_vision_lines, 
+                                **self.DRAW_VISION_BUTTON_STLE)
 
     def display_evolution_info(self):
         #display generation information
         gen_textSurface = self.font.render("Generation: " + str(self.num_generations), True, (0, 0, 0))
         rect = gen_textSurface.get_rect(left=(game_window_width * 0.02), top=(game_window_height * 0.02))
         self.game_display.blit(gen_textSurface, rect)
-        #display speed information
-        speed_textSurface = self.font.render("Speed: " + str(self.speed_slider.getValue()) + 'x', True, (0, 0, 0))
-        rect = speed_textSurface.get_rect(left=(game_window_width * 0.02), top=(game_window_height * 0.04))
-        self.game_display.blit(speed_textSurface, rect)
         #display current max score information
         curr_score_textSurface = self.font.render("Current Max Score: " + str(self.curr_max_score), True, (0, 0, 0))
         rect = curr_score_textSurface.get_rect(left=(game_window_width * 0.02), top=(game_window_height * 0.06))
@@ -106,6 +160,10 @@ class game(object):
                 if event.type == pygame.QUIT:
                     crashed = True
                     break
+                #check the events of the return to splash screen button
+                self.splash_screen_btn.check_event(event)
+                #check events for draw vision lines button
+                self.draw_vision_button.check_event(event)
             keys = pygame.key.get_pressed()
             if keys[pygame.K_ESCAPE]:
                 crashed = True
@@ -114,48 +172,40 @@ class game(object):
             self.course.draw()
             #draw the generation info
             self.display_evolution_info()
-            #do evolution slider events
-            self.speed_slider.listen(game_events)
-            self.speed_slider.draw()
-            #do return to home button events
-            self.splash_screen_btn.listen(game_events)
-            self.splash_screen_btn.draw()
-            #for the given speed
-            for i in range(self.speed_slider.getValue()):
-                #car thinking and drawing
-                all_cars_crashed = True
-                self.curr_max_score = 0
-                for car in self.cars:
-                    if not car.has_crashed:
-                        all_cars_crashed = False
-                        #have neurat net predict move
-                        thought = car.think()
-                        if thought[0] > 0.5:
-                            car.rotate_left()
-                        if thought[1] > 0.5:
-                            car.rotate_right()
-                        #increment car score
-                        car.score += 1
-                        #keep track of the highest score
-                        if car.score > self.curr_max_score:
-                            self.curr_max_score = car.score
-                        #perfom car actions
-                        car.accelerate()
-                        car.check_crash()
-                #update the max score across all generations
-                if self.curr_max_score > self.max_score_all_generations:
-                    self.max_score_all_generations = self.curr_max_score
-                #check for new generation
-                if all_cars_crashed:
+            #car thinking and drawing
+            all_cars_crashed = True
+            self.curr_max_score = 0
+            for car in self.cars:
+                if not car.has_crashed:
                     all_cars_crashed = False
-                    self.num_generations += 1
-                    self.cars = get_next_generation(self.cars)
-                #re-draw the slider
-                self.speed_slider.listen(game_events)
-                self.speed_slider.draw()
+                    #have neurat net predict move
+                    thought = car.think()
+                    if thought[0] > 0.5:
+                        car.rotate_left()
+                    if thought[1] > 0.5:
+                        car.rotate_right()
+                    #increment car score
+                    car.score += 1
+                    #keep track of the highest score
+                    if car.score > self.curr_max_score:
+                        self.curr_max_score = car.score
+                    #perfom car actions
+                    car.accelerate()
+                    car.check_crash()
+            #update the max score across all generations
+            if self.curr_max_score > self.max_score_all_generations:
+                self.max_score_all_generations = self.curr_max_score
+            #check for new generation
+            if all_cars_crashed:
+                all_cars_crashed = False
+                self.num_generations += 1
+                self.cars = get_next_generation(self.cars)
             #only after the speed loop do we draw each car
             for car in self.cars:
-                car.draw()
+                car.draw(self.draw_car_vision)
+            #redraw the buttons
+            self.splash_screen_btn.update(self.game_display)
+            self.draw_vision_button.update(self.game_display)
             #redraw window
             pygame.display.update()
             self.clock.tick(FPS)

@@ -1,12 +1,9 @@
-
 import math
-import sys
-from tkinter import *
 from game import intersects
 from functools import partial
 from game_settings import *
 from course_shape_creator import *
-
+import tkinter as tk
 
 #determines distance between two points
 def get_dist(point1, point2):
@@ -33,11 +30,13 @@ def is_between(a, b, c):
         return False
     return True
 
-def return_to_splash_screen():
-    from GameRunner import show_splash_screen
-    pygame.quit()
-    show_splash_screen()
-
+BUTTON_STYLE = {
+    "hover_color": (0,255,0),
+    "clicked_color": (0,255,0),
+    "clicked_font_color": (0,0,0),
+    "hover_font_color": (0,0,0),
+    "text": "Return Home"
+}
 
 #----------------------------------------------------
 #click and hold to add line
@@ -66,10 +65,15 @@ class course_creator(object):
         self.start_box = pygame.Rect(self.gameDisplay.get_width()/2 - car_width/2, self.gameDisplay.get_height()/2 - car_height/2, car_width, car_height)
         self.drawn_start_box  = False
         self.hovering_on_start = False
-        self.points = {} #keep track of all pints (can have at most 2 lines ending at the same point)
+        self.points = {} #keep track of all points (can have at most 2 lines ending at the same point)
         self.font = pygame.font.SysFont(display_font,14)
-        self.splash_screen_btn = Button(self.gameDisplay, int(game_window_width * 0.8), int(game_window_height * 0.75), int(game_window_width * 0.06), int(game_window_height * 0.03), text='Return Home', onClick=return_to_splash_screen, font=self.font, inactiveColour=(220,0,0), hoverColour=(255,255,255),pressedColor=(0,255,0))
+        self.splash_screen_btn = Button((int(game_window_width * 0.8), int(game_window_height * 0.75), int(game_window_width * 0.06), int(game_window_height * 0.03)), (0,200,50), self.return_to_splash_screen, **BUTTON_STYLE)
 
+    def return_to_splash_screen(self):
+        from GameRunner import show_splash_screen
+        pygame.display.quit()
+        pygame.quit()
+        show_splash_screen()
 
     def run(self):
         stopped = False
@@ -79,34 +83,36 @@ class course_creator(object):
             self.gameDisplay.fill(self.backround)
             #put information in top left
             self.add_text_elements()
-            #do button game events`
-            #do return to home button events
-            self.splash_screen_btn.listen(pygame.event.get())
-            self.splash_screen_btn.draw()
             #draw each of the lines
             for line in self.lines:
                 pygame.draw.line(self.gameDisplay, self.line_color, line[0], line[1])
             #check click events
-            for event in pygame.event.get():
+            game_events = pygame.event.get()
+            for event in game_events:
                 if event.type == pygame.QUIT:
                     stopped = True
                     break
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_z:            #if user hits z -> remove last line
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        stopped = True
+                        break
+                    elif event.key == pygame.K_z:            #if user hits z -> remove last line
                         if len(self.lines) > 0:
                             self.points[''.join(map(str, self.lines[-1][0]))] -= 1
                             self.points[''.join(map(str, self.lines[-1][1]))] -= 1
                             self.lines.pop(len(self.lines) - 1)
-                    if event.key == pygame.K_s:            #if user hits s -> save the lines into a file
+                    elif event.key == pygame.K_s:            #if user hits s -> save the lines into a file
                         self.save_window()
-                    if event.key == pygame.K_t:            #if user hits t -> create a start position for the car
+                    elif event.key == pygame.K_t:            #if user hits t -> create a start position for the car
                         self.drawn_start_box = True
-                #check for line creation
-                self.check_create_line(event)
+                elif event.type == pygame.MOUSEBUTTONUP or pygame.mouse.get_pressed()[0]:
+                    #check for line creation
+                    self.handle_line_creation(event)
+                #check the events of the return to splash screen button
+                self.splash_screen_btn.check_event(event)
             #draw line being created
             if self.creating_line:
                 pygame.draw.line(self.gameDisplay, self.line_color, self.start_pos, self.end_pos)
-
             if self.drawn_start_box:
                 if self.start_box.collidepoint(pygame.mouse.get_pos()) or (self.hovering_on_start and pygame.mouse.get_pressed()[0]):
                     self.hovering_on_start = True
@@ -115,12 +121,8 @@ class course_creator(object):
                 else:
                     self.hovering_on_start = False
                 self.draw_start_box()
-            #check key events
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_ESCAPE]:
-                stopped = True
-                break
             #check for line deletion/hover events
+            keys = pygame.key.get_pressed()
             for line in self.lines:
                 self.hovered_on_end = False
                 self.hover_pos = (0,0)
@@ -140,9 +142,12 @@ class course_creator(object):
                     self.hovered_on_end = True
                     self.hover_pos = line[1]
                     break
+            #redraw the return to splash screen button
+            self.splash_screen_btn.update(self.gameDisplay)
             #redraw window
             pygame.display.update()
             self.clock.tick(FPS)
+        pygame.display.quit()
         pygame.quit()
 
     def add_text_elements(self):
@@ -166,7 +171,7 @@ class course_creator(object):
         self.gameDisplay.blit(textSurface, rect)
 
     #line creation
-    def check_create_line(self, event):
+    def handle_line_creation(self, event):
         if self.hovering_on_start:
             return
         if event.type == pygame.MOUSEBUTTONUP:
@@ -231,12 +236,12 @@ class course_creator(object):
         self.window.geometry('%dx%d+%d+%d' % (w, h, game_window_width/2 - w/2, game_window_height/2 - h/2))
         self.window.title("Save Course")
         lbl = Label(self.window, text="course name")
-        lbl.place(relx=0.1, rely=0.2)
+        lbl.place(relx=0.05, rely=0.2)
         e1 = Entry(self.window)
-        e1.place(relx=0.4, rely=0.2)
-        btn = Button(self.window, text='save', command=partial(self.save_course, e1))
+        e1.place(relx=0.5, rely=0.2, width=w*0.4)
+        btn = tk.Button(self.window, text='save', command=partial(self.save_course, e1))
         btn.config(height = 1, width = 10)
-        btn.place(relx=0.35, rely=0.65)
+        btn.place(relx=0.35, rely=0.55)
         self.window.mainloop()
 
     #logic for saving the couse to local machine
@@ -252,7 +257,7 @@ class course_creator(object):
                     line_str = str(line) + "\n"
                     file.write(line_str)
         except:
-            os.mkdir(course_folder)
+            os.mkdir(courses_folder)
             with open(file_name, "w") as file:
                 file.write(start_box_str)
                 for line in self.lines:
@@ -335,7 +340,7 @@ class course_creator(object):
             lbl.place(relx=0.5, rely=0.3, anchor=CENTER)
             def close_window():
                 self.window.destroy()
-            btn = Button(self.window, text="Ok", bg="gray", fg="white", command=close_window)
+            btn = tk.Button(self.window, text="Ok", bg="gray", fg="white", command=close_window)
             btn.place(relx=0.5, rely=0.7, anchor=CENTER)
             self.window.lift()
             self.window.mainloop()

@@ -1,17 +1,16 @@
 import math
 import os
+import sys
  #hidding pygame welcome messages
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 #make sure we find a display to output to
 if os.environ.get('DISPLAY','') == '':
     os.environ.__setitem__('DISPLAY', ':0.0')
 import numpy as np
-#filter out all numpy warnings
-np.warnings.filterwarnings("ignore")
 from functools import partial
 from tkinter import *
 import pygame
-from pygame_widgets import *
+from pygame_button import Button
 
 #evolution settings / AI settings
 population_size = 10
@@ -40,7 +39,6 @@ FPS = 60
 display_font = 'Times New Roman'
 
 #car settings
-draw_vision_lines = False
 car_width = 20
 car_height = 40
 friction = 0.1
